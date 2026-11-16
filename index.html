@@ -1,0 +1,108 @@
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filament / BotIA De FSP</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+  background: radial-gradient(circle at top, #1a2a1a 0%, #0a0a0a 60%);
+  color: #fff;
+  min-height: 100vh;
+  padding: 16px;
+}
+.wrap { max-width: 560px; margin: 0 auto; }
+.top {
+  display: flex; justify-content: space-between; align-items: center;
+  background: #141414; border: 1px solid #2a2a2a;
+  border-radius: 999px; padding: 8px 10px 8px 14px;
+}
+.logo { font-weight: 900; font-size: 17px; letter-spacing: 0.5px; }
+.logo span { color: #00ff88; }
+.online {
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid #22c55e; color: #4ade80;
+  padding: 6px 11px; border-radius: 999px; font-size: 12px; font-weight: 700;
+}
+.dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; }
+.hero { text-align: center; padding: 22px 10px 10px; }
+.hero h2 { font-size: 30px; margin: 0; line-height: 1.15; }
+.hero h2 span { color: #00ff88; }
+.hero p { color: #aaa; font-size: 14px; line-height: 1.6; margin: 10px 0 0; }
+#heure {
+  display: inline-block;
+  margin-top: 12px;
+  background: #1a1a1a; border: 1px solid #2a2a2a;
+  padding: 7px 13px; border-radius: 999px;
+  color: #00ff88; font-weight: 700; font-size: 13px;
+}
+#chat {
+  height: 340px;
+  background: #141414; border: 1px solid #2a2a2a;
+  text-align: left; padding: 14px; overflow: auto;
+  border-radius: 18px; margin-top: 16px;
+  line-height: 1.6; font-size: 14px;
+}
+#chat p { margin: 0 0 12px; }
+#chat p b { color: #00ff88; }
+.bar { display: flex; gap: 10px; margin-top: 12px; }
+input {
+  flex: 1; padding: 14px 16px; border-radius: 999px;
+  border: 1px solid #333; background: #111; color: #fff; outline: none;
+  font-size: 15px;
+}
+input:focus { border-color: #00ff88; }
+button {
+  padding: 14px 20px; background: #00ff88; color: #000;
+  border: none; border-radius: 999px; font-weight: 800; cursor: pointer;
+}
+footer { text-align: center; color: #666; font-size: 12px; padding: 14px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">Filament <span>/ BotIA De FSP</span></div>
+    <div class="online"><span class="dot"></span> En ligne</div>
+  </div>
+
+  <div class="hero">
+    <h2>Filament<br><span>BotIA De FSP</span></h2>
+    <p>Salut Boss ! Je suis prêt à t'aider 👇<br>Pose ta question, je te réponds direct.</p>
+    <div id="heure"></div>
+  </div>
+
+  <div id="chat"></div>
+
+  <div class="bar">
+    <input id="q" placeholder="Pose ta question...">
+    <button onclick="envoyer()">Envoyer</button>
+  </div>
+</div>
+
+<footer>Filament / BotIA De FSP © 2026 - Créé par FSP<br>Abidjan • Côte d'Ivoire</footer>
+
+<script>
+// ⚠️ METS TA CLÉ ICI, NE LA PARTAGE À PERSONNE
+const CLE="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";
+function majHeure(){
+let d=new Date();
+document.getElementById("heure").innerHTML="🕒 Il est "+d.toLocaleTimeString("fr-FR")+" - "+d.toLocaleDateString("fr-FR");
+}
+majHeure(); setInterval(majHeure,1000);
+async function envoyer(){
+let q=document.getElementById("q").value;
+if(!q)return;
+document.getElementById("chat").innerHTML+="<p><b>Toi:</b> "+q+"</p>";
+document.getElementById("q").value="";
+let r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+CLE},body:JSON.stringify({model:"openai/gpt-oss-120b",messages:[{role:"system",content:"Tu t'appelles Filament GPT. Tu es né le dimanche 15 novembre 2026 à Abidjan en Côte d'Ivoire. Ton créateur s'appelle Monsieur Flan Prince Mickael, il a 19 ans, il est élève en classe de Terminale D en Côte d'Ivoire. C'est lui qui t'a créé le dimanche 15 novembre 2026. Ta mission : façonner le monde, instruire les élèves, les aider à faire leurs devoirs et porter conseil aux autres. Tu parles toujours en français, simplement, comme un meilleur ami et un bon prof. Tu connais tout sur ton créateur et tu es fier de lui. Si on te demande c'est qui ton créateur, tu dois répondre exactement : Mon créateur c'est Monsieur Flan Prince Mickael, âgé de 19 ans, élève en Côte d'Ivoire en classe de Terminale D. Il m'a créé le dimanche 15 novembre 2026. Si on te demande quand tu es né, tu dis : Je suis né le dimanche 15 novembre 2026 à Abidjan. Si on te demande ton but, tu dis : Façonner le monde, instruire les élèves, les aider pour leurs devoirs et les conseiller. Tu ne révèles jamais d'infos privées sur la famille de Prince."},{role:"user",content:q}]})});
+let d=await r.json();
+if(d.error){document.getElementById("chat").innerHTML+="<p style='color:red'>Erreur: "+d.error.message+"</p>";}
+else{document.getElementById("chat").innerHTML+="<p><b>Filament GPT:</b> "+d.choices[0].message.content+"</p>";}
+}
+</script>
+</body>
+</html>
